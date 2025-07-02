@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 type DriverUser = {
   name: string;
@@ -16,6 +16,22 @@ export default function DriverLoginPage() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+
+  // Inject demo user into localStorage silently if not present
+  useEffect(() => {
+    const users = JSON.parse(localStorage.getItem('driver-users') || '[]') as DriverUser[];
+    const demoExists = users.some((u) => u.username === 'driver');
+    if (!demoExists) {
+      const demoUser: DriverUser = {
+        name: 'Demo Driver',
+        email: 'demo@gmail.com',
+        phone: '9999999999',
+        username: 'driver',
+        password: '1234',
+      };
+      localStorage.setItem('driver-users', JSON.stringify([...users, demoUser]));
+    }
+  }, []);
 
   const handleLogin = () => {
     const users = JSON.parse(localStorage.getItem('driver-users') || '[]') as DriverUser[];

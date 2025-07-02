@@ -70,8 +70,10 @@ export default function DriverLoginPage() {
             onClick={handleLogin}
             className="w-full bg-indigo-600 hover:bg-indigo-700 transition-colors duration-200 py-3 rounded-lg font-semibold shadow-md hover:shadow-lg"
           >
+
             Log In
           </button>
+          
 
           <p className="text-center text-gray-400 text-sm mt-4">
             Don’t have an account?{' '}

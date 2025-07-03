@@ -3,13 +3,16 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
-export default function HomePageRedirect() {
+export default function HomePage() {
   const router = useRouter();
 
   useEffect(() => {
-    // Redirect to login page on load
-    router.replace('/login');
+    router.push('/login');
   }, [router]);
 
-  return null; // Don't render anything
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-black text-white">
+      <p>Redirecting to login...</p>
+    </div>
+  );
 }

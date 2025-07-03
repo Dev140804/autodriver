@@ -4,9 +4,6 @@ import { useEffect, useRef, useState } from 'react';
 
 type DriverUser = {
   name?: string;
-  email?: string;
-  phone?: string;
-  image?: string;
 };
 
 export default function DriverHomePage() {
@@ -30,7 +27,7 @@ export default function DriverHomePage() {
         });
       },
       (err) => {
-        console.error('Geolocation error:', err);
+        console.warn('Geolocation permission denied or unavailable:', err.message);
       }
     );
   }, []);
@@ -46,43 +43,37 @@ export default function DriverHomePage() {
       new window.google.maps.Marker({
         position: location,
         map,
-        title: 'Your Location',
+        title: 'You are here',
       });
     }
   }, [location]);
 
   if (!user) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-black text-white">
-        <p>You are not logged in.</p>
-      </div>
+      <main className="flex items-center justify-center min-h-screen bg-black text-white px-4">
+        <p className="text-center text-gray-400">You are not logged in.</p>
+      </main>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-950 text-white p-6">
-      <div className="max-w-3xl mx-auto space-y-8">
-        <h1 className="text-3xl font-bold text-center text-indigo-400">
-          Welcome, {user.name?.split(' ')[0] || 'Driver'} 👋
-        </h1>
+    <main className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-950 text-white px-6 py-10">
+      <div className="max-w-4xl mx-auto space-y-10">
+        <div className="text-center">
+          <h1 className="text-3xl font-semibold text-indigo-400">
+            Hey, {user.name?.split(' ')[0] || 'Driver'} 👋
+          </h1>
+          <p className="text-gray-400 text-sm mt-2">Ready to hit the road?</p>
+        </div>
 
-        <div className="bg-gray-900/80 backdrop-blur-xl border border-gray-800 rounded-2xl p-6 shadow-xl">
-          <h2 className="text-xl font-semibold mb-4 text-indigo-300">📍 Current Location</h2>
+        <section className="bg-gray-900/90 rounded-2xl shadow-2xl border border-gray-800 backdrop-blur-xl p-6">
+          <h2 className="text-lg font-medium mb-4 text-indigo-300">📍 Live Location</h2>
           <div
             ref={mapRef}
             className="w-full h-[400px] rounded-lg border border-gray-700"
           />
-        </div>
-
-        <div className="bg-gray-900/80 backdrop-blur-xl border border-gray-800 rounded-2xl p-6 shadow-xl">
-          <h2 className="text-xl font-semibold mb-4 text-indigo-300">👤 Driver Info</h2>
-          <div className="space-y-2">
-            <p><strong>Name:</strong> {user.name || 'N/A'}</p>
-            <p><strong>Email:</strong> {user.email || 'N/A'}</p>
-            <p><strong>Phone:</strong> {user.phone || 'N/A'}</p>
-          </div>
-        </div>
+        </section>
       </div>
-    </div>
+    </main>
   );
 }

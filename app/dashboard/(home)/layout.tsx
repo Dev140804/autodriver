@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { ReactNode } from 'react';
+import { ReactNode, useEffect } from 'react';
 
 const navItems = [
   { name: 'Home', path: '/dashboard/home' },
@@ -14,22 +14,43 @@ const navItems = [
 export default function DashboardLayout({ children }: { children: ReactNode }) {
   const pathname = usePathname();
 
-  return (
-    <div className="flex flex-col h-screen">
-      <div className="flex-1 overflow-y-auto">{children}</div>
+  // Load Google Maps JS
+  useEffect(() => {
+    const scriptId = 'google-maps-script';
+    const isAlreadyPresent = document.getElementById(scriptId);
 
-      <nav className="flex justify-around bg-gray-800 text-white p-4">
-        {navItems.map((item) => (
-          <Link
-            key={item.name}
-            href={item.path}
-            className={`text-sm ${
-              pathname === item.path ? 'text-blue-400 font-bold' : 'text-white'
-            }`}
-          >
-            {item.name}
-          </Link>
-        ))}
+    if (!isAlreadyPresent) {
+      const script = document.createElement('script');
+      script.id = scriptId;
+      script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}`;
+      script.async = true;
+      script.defer = true;
+      document.body.appendChild(script);
+    }
+  }, []);
+
+  return (
+    <div className="flex flex-col h-screen bg-black text-white">
+      {/* Page Content */}
+      <main className="flex-1 overflow-y-auto">{children}</main>
+
+      {/* Bottom Navigation */}
+      <nav className="flex justify-around border-t border-gray-700 bg-gray-900 py-3">
+        {navItems.map((item) => {
+          const isActive = pathname.startsWith(item.path);
+          return (
+            <Link
+              key={item.name}
+              href={item.path}
+              aria-current={isActive ? 'page' : undefined}
+              className={`text-sm font-medium transition-colors ${
+                isActive ? 'text-indigo-400' : 'text-gray-300 hover:text-white'
+              }`}
+            >
+              {item.name}
+            </Link>
+          );
+        })}
       </nav>
     </div>
   );

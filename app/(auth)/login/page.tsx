@@ -1,7 +1,9 @@
 'use client';
-
+export const dynamic = 'force-dynamic';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
+import { signIn, useSession } from 'next-auth/react';
+import Image from 'next/image';
 
 type DriverUser = {
   name: string;
@@ -13,11 +15,24 @@ type DriverUser = {
 
 export default function DriverLoginPage() {
   const router = useRouter();
+  const { data: session } = useSession();
+
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
 
-  // Inject demo user into localStorage silently if not present
+  useEffect(() => {
+    if (session?.user) {
+      const user = {
+        name: session.user.name || '',
+        email: session.user.email || '',
+        phone: '',
+      };
+      localStorage.setItem('driver-user', JSON.stringify(user));
+      router.push('/welcome');
+    }
+  }, [session, router]);
+
   useEffect(() => {
     const users = JSON.parse(localStorage.getItem('driver-users') || '[]') as DriverUser[];
     const demoExists = users.some((u) => u.username === 'driver');
@@ -38,66 +53,77 @@ export default function DriverLoginPage() {
     const matchedUser = users.find(
       (user) => user.username === username && user.password === password
     );
+
     if (matchedUser) {
       localStorage.setItem('driver-user', JSON.stringify(matchedUser));
-      router.push('/dashboard/home');
+      router.push('/welcome');
     } else {
       setError('Invalid username or password');
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-black to-gray-950 px-4 py-10">
-      <div className="w-full max-w-md bg-gray-900/90 backdrop-blur p-8 rounded-2xl shadow-2xl text-white border border-gray-800">
-        <h2 className="text-4xl font-bold text-center mb-8 text-indigo-400">Driver Login</h2>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#0f0f0f] via-[#111827] to-[#1f2937] px-4 py-12">
+      <div className="w-full max-w-md bg-[#1f2937]/80 backdrop-blur-md p-8 rounded-2xl shadow-lg border border-gray-700 text-white">
+        <h1 className="text-3xl font-semibold text-center text-indigo-400 mb-6">Welcome Back</h1>
 
-        <div className="space-y-5">
+        <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-1">Username</label>
+            <label className="block text-sm text-gray-300 mb-1">Username</label>
             <input
-              name="username"
               type="text"
-              autoComplete="username"
-              placeholder="Enter your username"
               value={username}
               onChange={(e) => {
                 setUsername(e.target.value);
                 setError('');
               }}
-              className="w-full px-4 py-2 bg-gray-800 rounded-lg border border-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 placeholder-gray-400"
+              placeholder="Enter username"
+              className="w-full px-4 py-2 bg-gray-800 text-white rounded-lg border border-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-1">Password</label>
+            <label className="block text-sm text-gray-300 mb-1">Password</label>
             <input
-              name="password"
               type="password"
-              autoComplete="current-password"
-              placeholder="Enter your password"
               value={password}
               onChange={(e) => {
                 setPassword(e.target.value);
                 setError('');
               }}
-              className="w-full px-4 py-2 bg-gray-800 rounded-lg border border-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 placeholder-gray-400"
+              placeholder="Enter password"
+              className="w-full px-4 py-2 bg-gray-800 text-white rounded-lg border border-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500"
             />
           </div>
 
-          {error && <p className="text-red-400 text-center text-sm">{error}</p>}
+          {error && <p className="text-sm text-red-500 text-center">{error}</p>}
 
           <button
             onClick={handleLogin}
-            className="w-full bg-indigo-600 hover:bg-indigo-700 py-3 rounded-lg font-semibold transition duration-200"
+            className="w-full mt-2 bg-indigo-600 hover:bg-indigo-700 py-2.5 rounded-lg font-semibold transition duration-200"
           >
-            Log In
+            Sign In
           </button>
 
-          <p className="text-sm text-center mt-6 text-gray-400">
+          <div className="relative my-4">
+            <hr className="border-gray-700" />
+            <span className="absolute left-1/2 top-[-12px] transform -translate-x-1/2 bg-[#1f2937] px-2 text-gray-400 text-sm">
+              or
+            </span>
+          </div>
+
+          <button
+            onClick={() => signIn('google')}
+            className="w-full bg-white text-black py-2.5 rounded-lg font-semibold flex items-center justify-center gap-2 hover:bg-gray-100 transition"
+          >
+            <Image src="/google-icon.svg" alt="Google" width={20} height={20} />            Sign in with Google
+          </button>
+
+          <p className="text-center text-sm text-gray-400 mt-4">
             Don’t have an account?{' '}
             <span
               onClick={() => router.push('/driver-signup')}
-              className="text-indigo-400 hover:underline cursor-pointer font-medium"
+              className="text-indigo-400 cursor-pointer hover:underline"
             >
               Sign Up
             </span>

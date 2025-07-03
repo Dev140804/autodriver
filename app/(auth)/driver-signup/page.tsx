@@ -1,8 +1,12 @@
 'use client';
+export const dynamic = 'force-dynamic';
 
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import { FcGoogle } from 'react-icons/fc';
+import { signIn } from 'next-auth/react';
 
+// Type for user
 type DriverUser = {
   name: string;
   email: string;
@@ -37,25 +41,25 @@ export default function DriverSignup() {
     if (!email.trim()) {
       newErrors.email = 'Email is required';
     } else if (!/^[a-zA-Z0-9._%+-]+@gmail\.com$/.test(email)) {
-      newErrors.email = 'Use a valid Gmail address';
+      newErrors.email = 'Only valid Gmail addresses allowed';
     }
 
     if (!phone.trim()) {
       newErrors.phone = 'Phone is required';
     } else if (!/^\d{10}$/.test(phone)) {
-      newErrors.phone = 'Phone must be 10 digits';
+      newErrors.phone = 'Enter a 10-digit number';
     }
 
     if (!username.trim()) newErrors.username = 'Username is required';
     if (!password.trim()) {
       newErrors.password = 'Password is required';
     } else if (password.length < 8) {
-      newErrors.password = 'Minimum 8 characters';
+      newErrors.password = 'Password must be at least 8 characters';
     }
 
     const existingUsers = JSON.parse(localStorage.getItem('driver-users') || '[]') as DriverUser[];
-    if (existingUsers.find((u) => u.username === username)) {
-      newErrors.username = 'Username already taken';
+    if (existingUsers.some((u) => u.username === username)) {
+      newErrors.username = 'Username already exists';
     }
 
     setErrors(newErrors);
@@ -72,45 +76,65 @@ export default function DriverSignup() {
     router.push('/welcome');
   };
 
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-950 flex items-center justify-center px-4">
-      <div className="w-full max-w-lg bg-gray-800/90 p-10 rounded-2xl shadow-xl border border-gray-700 backdrop-blur-md text-white">
-        <h2 className="text-4xl font-bold text-center mb-8 text-indigo-400">Driver Sign Up</h2>
+  const handleGoogleSignUp = async () => {
+    await signIn('google');
+  };
 
-        <div className="space-y-5">
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#0f0f0f] via-[#1a1a1a] to-[#1f2937] px-4 py-10">
+      <div className="w-full max-w-lg bg-[#1f2937]/90 backdrop-blur-md p-10 rounded-2xl shadow-xl border border-gray-700 text-white">
+        <h1 className="text-3xl font-semibold text-center mb-8 text-indigo-400">Create Driver Account</h1>
+
+        <div className="space-y-6">
           {[
             { label: 'Full Name', name: 'name', placeholder: 'John Doe' },
-            { label: 'Email (Gmail only)', name: 'email', placeholder: 'you@gmail.com' },
+            { label: 'Gmail Address', name: 'email', placeholder: 'example@gmail.com' },
             { label: 'Phone Number', name: 'phone', placeholder: '10-digit number' },
             { label: 'Username', name: 'username', placeholder: 'Choose a username' },
-            { label: 'Password', name: 'password', placeholder: 'At least 8 characters', type: 'password' },
+            { label: 'Password', name: 'password', placeholder: 'Minimum 8 characters', type: 'password' },
           ].map(({ label, name, placeholder, type = 'text' }) => (
-            <div key={name}>
-              <label className="block text-sm font-medium text-gray-300 mb-1">{label}</label>
+            <div key={name} className="flex flex-col gap-1">
+              <label htmlFor={name} className="text-sm text-gray-300">
+                {label}
+              </label>
               <input
-                type={type}
+                id={name}
                 name={name}
+                type={type}
                 value={form[name as keyof DriverUser]}
                 onChange={handleChange}
                 placeholder={placeholder}
-                className="w-full px-4 py-2 rounded-lg bg-gray-900 text-white border border-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 placeholder-gray-400"
+                className="w-full px-4 py-2 bg-gray-900 text-white rounded-md border border-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 placeholder-gray-500"
               />
-              {errors[name] && <p className="text-red-400 text-sm mt-1">{errors[name]}</p>}
+              {errors[name] && <span className="text-sm text-red-400 mt-1">{errors[name]}</span>}
             </div>
           ))}
 
           <button
             onClick={handleSignup}
-            className="w-full bg-indigo-600 hover:bg-indigo-700 transition-colors duration-200 py-3 rounded-lg font-semibold shadow-md hover:shadow-lg"
+            className="w-full bg-indigo-600 hover:bg-indigo-700 py-3 rounded-md font-semibold transition duration-200"
           >
             Sign Up
           </button>
 
-          <p className="text-center text-gray-400 text-sm mt-4">
-            Already registered?{' '}
+          <div className="flex items-center justify-center gap-3">
+            <div className="h-px bg-gray-600 w-full" />
+            <span className="text-sm text-gray-400">OR</span>
+            <div className="h-px bg-gray-600 w-full" />
+          </div>
+
+          <button
+            onClick={handleGoogleSignUp}
+            className="flex items-center justify-center gap-3 w-full border border-gray-600 py-3 rounded-md text-sm hover:bg-gray-800 transition"
+          >
+            <FcGoogle className="text-xl" /> Sign up with Google
+          </button>
+
+          <p className="text-sm text-center text-gray-400 mt-4">
+            Already have an account?{' '}
             <span
-              className="text-indigo-400 hover:underline cursor-pointer"
               onClick={() => router.push('/login')}
+              className="text-indigo-400 cursor-pointer hover:underline"
             >
               Log In
             </span>

@@ -51,31 +51,31 @@ export default function SettingsPage() {
   if (loading || !user) return null;
 
   const settings = [
-  {
-    label: 'Change Display Name',
-    icon: <User className="w-5 h-5 mr-3" />,
-    route: '/dashboard/settings/change-name',
-    key: 'display name',
-  },
-  {
-  label: 'Theme',
-  icon: <SunMoon className="w-5 h-5 mr-3" />,
-  route: '/dashboard/settings/theme',
-  key: 'theme',
-},
-  {
-    label: 'Help Assistant',
-    icon: <MessageCircle className="w-5 h-5 mr-3" />,
-    route: '/dashboard/settings/help-assistant',
-    key: 'help assistant',
-  },
-  {
-    label: 'About',
-    icon: <Info className="w-5 h-5 mr-3" />,
-    route: '/dashboard/settings/about-info',
-    key: 'about',
-  },
-];
+    {
+      label: 'Change Display Name',
+      icon: <User className="w-5 h-5 mr-3" />,
+      route: '/dashboard/settings/change-name',
+      key: 'change name',
+    },
+    {
+      label: 'Theme',
+      icon: <SunMoon className="w-5 h-5 mr-3" />,
+      route: '/dashboard/settings/theme',
+      key: 'theme',
+    },
+    {
+      label: 'Help Assistant',
+      icon: <MessageCircle className="w-5 h-5 mr-3" />,
+      route: '/dashboard/settings/help-assistant',
+      key: 'help assistant',
+    },
+    {
+      label: 'About',
+      icon: <Info className="w-5 h-5 mr-3" />,
+      route: '/dashboard/settings/about-info',
+      key: 'about',
+    },
+  ];
 
   return (
     <div className="min-h-screen bg-[#111827] px-4 py-10 text-white flex justify-center items-start">

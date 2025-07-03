@@ -98,9 +98,17 @@ export default function DriverLoginPage() {
 
           {error && <p className="text-sm text-red-500 text-center">{error}</p>}
 
+          {/* ✅ Forgot Password Link */}
+          <p
+            onClick={() => router.push('/forgot-password')}
+            className="text-sm text-indigo-400 text-right mt-1 cursor-pointer hover:underline"
+          >
+            Forgot Password?
+          </p>
+
           <button
             onClick={handleLogin}
-            className="w-full mt-2 bg-indigo-600 hover:bg-indigo-700 py-2.5 rounded-lg font-semibold transition duration-200"
+            className="w-full mt-3 bg-indigo-600 hover:bg-indigo-700 py-2.5 rounded-lg font-semibold transition duration-200"
           >
             Sign In
           </button>
@@ -116,7 +124,8 @@ export default function DriverLoginPage() {
             onClick={() => signIn('google')}
             className="w-full bg-white text-black py-2.5 rounded-lg font-semibold flex items-center justify-center gap-2 hover:bg-gray-100 transition"
           >
-            <Image src="/google-icon.svg" alt="Google" width={20} height={20} />            Sign in with Google
+            <Image src="/google-icon.svg" alt="Google" width={20} height={20} />
+            Sign in with Google
           </button>
 
           <p className="text-center text-sm text-gray-400 mt-4">

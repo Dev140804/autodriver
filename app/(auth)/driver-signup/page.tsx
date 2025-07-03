@@ -3,8 +3,6 @@ export const dynamic = 'force-dynamic';
 
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-import { FcGoogle } from 'react-icons/fc';
-import { signIn } from 'next-auth/react';
 
 // Type for user
 type DriverUser = {
@@ -76,10 +74,6 @@ export default function DriverSignup() {
     router.push('/welcome');
   };
 
-  const handleGoogleSignUp = async () => {
-    await signIn('google');
-  };
-
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#0f0f0f] via-[#1a1a1a] to-[#1f2937] px-4 py-10">
       <div className="w-full max-w-lg bg-[#1f2937]/90 backdrop-blur-md p-10 rounded-2xl shadow-xl border border-gray-700 text-white">
@@ -115,19 +109,6 @@ export default function DriverSignup() {
             className="w-full bg-indigo-600 hover:bg-indigo-700 py-3 rounded-md font-semibold transition duration-200"
           >
             Sign Up
-          </button>
-
-          <div className="flex items-center justify-center gap-3">
-            <div className="h-px bg-gray-600 w-full" />
-            <span className="text-sm text-gray-400">OR</span>
-            <div className="h-px bg-gray-600 w-full" />
-          </div>
-
-          <button
-            onClick={handleGoogleSignUp}
-            className="flex items-center justify-center gap-3 w-full border border-gray-600 py-3 rounded-md text-sm hover:bg-gray-800 transition"
-          >
-            <FcGoogle className="text-xl" /> Sign up with Google
           </button>
 
           <p className="text-sm text-center text-gray-400 mt-4">

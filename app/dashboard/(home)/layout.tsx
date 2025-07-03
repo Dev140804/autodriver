@@ -17,9 +17,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
   // Load Google Maps JS
   useEffect(() => {
     const scriptId = 'google-maps-script';
-    const isAlreadyPresent = document.getElementById(scriptId);
-
-    if (!isAlreadyPresent) {
+    if (!document.getElementById(scriptId)) {
       const script = document.createElement('script');
       script.id = scriptId;
       script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}`;
@@ -31,7 +29,6 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
 
   return (
     <div className="flex flex-col h-screen bg-black text-white">
-      {/* Page Content */}
       <main className="flex-1 overflow-y-auto">{children}</main>
 
       {/* Bottom Navigation */}

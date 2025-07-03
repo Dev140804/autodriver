@@ -2,7 +2,6 @@
 
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { signOut, useSession } from 'next-auth/react';
 
 type DriverUser = {
   name?: string;
@@ -14,8 +13,6 @@ type DriverUser = {
 
 export default function AboutPage() {
   const router = useRouter();
-  const { data: session } = useSession();
-
   const [user, setUser] = useState<DriverUser | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -31,16 +28,8 @@ export default function AboutPage() {
 
   const handleLogout = () => {
     if (!window.confirm('Log out from your account?')) return;
-
-    // Local logout
     localStorage.removeItem('driver-user');
-
-    // If signed in via Google
-    if (session) {
-      signOut({ callbackUrl: '/login' });
-    } else {
-      router.push('/login');
-    }
+    router.push('/login');
   };
 
   const handleDelete = () => {

@@ -13,7 +13,6 @@ export default function ChangeNamePage() {
   const router = useRouter();
   const [user, setUser] = useState<DriverUser | null>(null);
   const [name, setName] = useState('');
-  const [error, setError] = useState('');
   const [showSuccess, setShowSuccess] = useState(false);
 
   useEffect(() => {

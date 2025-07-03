@@ -83,7 +83,7 @@ export default function AboutPage() {
               <h2 className="text-lg font-semibold text-white">Confirm Logout</h2>
               <button
                 onClick={() => setShowModal(false)}
-                className="text-gray-400 hover:text-white transition"
+                className="text-gray-400 hover:text-white transition cursor-pointer"
               >
                 <X size={20} />
               </button>
@@ -96,13 +96,13 @@ export default function AboutPage() {
             <div className="flex justify-end gap-3 pt-4">
               <button
                 onClick={() => setShowModal(false)}
-                className="px-4 py-2 rounded-md bg-gray-700 hover:bg-gray-600 text-white transition"
+                className="px-4 py-2 rounded-md bg-gray-700 hover:bg-gray-600 text-white transition cursor-pointer"
               >
                 Cancel
               </button>
               <button
                 onClick={confirmLogout}
-                className="px-4 py-2 rounded-md bg-red-600 hover:bg-red-700 text-white transition font-medium"
+                className="px-4 py-2 rounded-md bg-red-600 hover:bg-red-700 text-white transition font-medium cursor-pointer"
               >
                 Logout
               </button>

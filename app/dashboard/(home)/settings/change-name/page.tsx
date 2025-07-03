@@ -50,7 +50,7 @@ export default function ChangeNamePage() {
   const isInvalid = name.trim().length < 3 || name === (user?.name || '');
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#111827] text-white px-4 relative">
+    <div className="min-h-screen bg-[#111827] text-white flex justify-center items-start pt-24 px-4 relative">
       {/* Success Toast */}
       <div
         className={`fixed bottom-6 left-1/2 transform -translate-x-1/2 transition-all duration-500 ${

@@ -136,7 +136,10 @@ export default function SettingsPage() {
           <div className="bg-[#1f2937] border border-gray-700 rounded-xl max-w-sm w-full p-6 text-center space-y-4">
             <div className="flex justify-between items-center mb-2">
               <h2 className="text-lg font-semibold text-white">Confirm Deletion</h2>
-              <button onClick={() => setShowDeleteModal(false)} className="text-gray-400 hover:text-white">
+              <button
+                onClick={() => setShowDeleteModal(false)}
+                className="text-gray-400 hover:text-white cursor-pointer"
+              >
                 <X size={20} />
               </button>
             </div>
@@ -146,13 +149,13 @@ export default function SettingsPage() {
             <div className="flex justify-end gap-3 pt-4">
               <button
                 onClick={() => setShowDeleteModal(false)}
-                className="px-4 py-2 rounded-md bg-gray-700 hover:bg-gray-600 text-white transition"
+                className="px-4 py-2 rounded-md bg-gray-700 hover:bg-gray-600 text-white transition cursor-pointer"
               >
                 Cancel
               </button>
               <button
                 onClick={confirmDelete}
-                className="px-4 py-2 rounded-md bg-red-600 hover:bg-red-700 text-white transition font-medium"
+                className="px-4 py-2 rounded-md bg-red-600 hover:bg-red-700 text-white transition font-medium cursor-pointer"
               >
                 Delete
               </button>

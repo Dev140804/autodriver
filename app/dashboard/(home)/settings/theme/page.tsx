@@ -21,7 +21,7 @@ export default function ThemeSettingsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#111827] text-white flex justify-center items-center px-4">
+    <div className="min-h-screen bg-[#111827] text-white flex justify-center items-start pt-24 px-4">
       <div className="max-w-md w-full bg-[#1f2937] p-6 rounded-xl shadow-xl border border-gray-700 space-y-6 relative">
         
         {/* Back Arrow Inside Theme Box */}

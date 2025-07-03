@@ -1,5 +1,6 @@
 'use client';
 export const dynamic = 'force-dynamic';
+
 import { useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
 
@@ -47,6 +48,11 @@ export default function DriverLoginPage() {
     }
   };
 
+  // 🔐 Enable logic:
+  const isDemoLogin = username === 'driver' && password === '1234';
+  const isValidLogin = username.trim() !== '' && password.length >= 8;
+  const canLogin = isDemoLogin || isValidLogin;
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#0f0f0f] via-[#111827] to-[#1f2937] px-4 py-12">
       <div className="w-full max-w-md bg-[#1f2937]/80 backdrop-blur-md p-8 rounded-2xl shadow-lg border border-gray-700 text-white">
@@ -83,7 +89,7 @@ export default function DriverLoginPage() {
 
           {error && <p className="text-sm text-red-500 text-center">{error}</p>}
 
-          {/* ✅ Forgot Password Link */}
+          {/* Forgot Password Link */}
           <p
             onClick={() => router.push('/forgot-password')}
             className="text-sm text-indigo-400 text-right mt-1 cursor-pointer hover:underline"
@@ -91,13 +97,20 @@ export default function DriverLoginPage() {
             Forgot Password?
           </p>
 
+          {/* Sign In Button */}
           <button
             onClick={handleLogin}
-            className="w-full mt-3 bg-indigo-600 hover:bg-indigo-700 py-2.5 rounded-lg font-semibold transition duration-200"
+            disabled={!canLogin}
+            className={`w-full mt-3 py-2.5 rounded-lg font-semibold transition duration-200 ${
+              canLogin
+                ? 'bg-indigo-600 hover:bg-indigo-700 cursor-pointer'
+                : 'bg-gray-700 text-gray-400 cursor-not-allowed opacity-50'
+            }`}
           >
             Sign In
           </button>
 
+          {/* Signup Redirect */}
           <p className="text-center text-sm text-gray-400 mt-4">
             Don’t have an account?{' '}
             <span

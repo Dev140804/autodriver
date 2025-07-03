@@ -10,6 +10,8 @@ export default function HomePage() {
     router.push('/login');
   }, [router]);
 
+  // Temporary change to trigger redeploy
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-black text-white">
       <p>Redirecting to login...</p>

@@ -12,7 +12,7 @@ const Marker = dynamic(() => import('react-leaflet').then(mod => mod.Marker), { 
 
 // Fix Leaflet icon issue
 if (typeof window !== 'undefined') {
-  delete (L.Icon.Default.prototype as any)._getIconUrl;
+  delete (L.Icon.Default.prototype as unknown as { _getIconUrl: unknown })._getIconUrl;
   L.Icon.Default.mergeOptions({
     iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.3/dist/images/marker-icon-2x.png',
     iconUrl: 'https://unpkg.com/leaflet@1.9.3/dist/images/marker-icon.png',
@@ -21,6 +21,8 @@ if (typeof window !== 'undefined') {
 }
 
 interface LiveMapProps {
+  lat: number;
+  lng: number;
   theme: 'dark' | 'bright' | 'simple';
 }
 

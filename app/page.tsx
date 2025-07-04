@@ -10,11 +10,9 @@ export default function HomePage() {
     router.push('/login');
   }, [router]);
 
-  // Temporary change to trigger redeploy
-
   return (
-    <div className="min-h-screen flex items-center justify-center bg-black text-white">
-      <p>Redirecting to login...</p>
+    <div className="min-h-screen flex items-center justify-center bg-[var(--bg-color)] text-[var(--text-color)] transition-colors duration-300">
+      <p className="text-lg">Redirecting to login...</p>
     </div>
   );
 }

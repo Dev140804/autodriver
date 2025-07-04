@@ -1,26 +1,66 @@
-@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
+/* === Global Font & Reset === */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --font-geist-sans: 'Geist', sans-serif;
+  --font-geist-mono: 'Geist Mono', monospace;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+/* === Default (Bright Theme) === */
+[data-theme='bright'] {
+  --bg-color: #ffffff;
+  --text-color: #111111;
+  --card-bg: #f7f7f7;
+  --border-color: #e2e8f0;
+  --primary-color: #000000; /* Tailwind Blue-600 */
+  --secondary-color: #10b981; /* Emerald-500 */
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* === Simple Theme (Blue Navy Gradient) === */
+[data-theme='simple'] {
+  --bg-color: #0f172a; /* Tailwind Slate-900 */
+  --text-color: #e2e8f0; /* Tailwind Slate-200 */
+  --card-bg: #1e293b; /* Tailwind Slate-800 */
+  --border-color: #334155; /* Tailwind Slate-700 */
+  --primary-color: #6366f1; /* Indigo-500 */
+  --secondary-color: #3b82f6; /* Blue-500 */
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* === Dark Theme (Luxury Black) === */
+[data-theme='dark'] {
+  --bg-color: #0a0a0a; /* Pure Black */
+  --text-color: #ededed;
+  --card-bg: #111111;
+  --border-color: #222222;
+  --primary-color: #ffffff;
+  --secondary-color: #9ca3af; /* Gray-400 */
+}
+
+/* === Apply Theme Styles === */
+html, body {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Example usage for cards, buttons, etc. */
+.card {
+  background-color: var(--card-bg);
+  color: var(--text-color);
+  border: 1px solid var(--border-color);
+  border-radius: 0.75rem; /* xl */
+  padding: 1rem;
+}
+
+.btn-primary {
+  background-color: var(--primary-color);
+  color: white;
+}
+
+.btn-secondary {
+  background-color: var(--secondary-color);
+  color: white;
 }

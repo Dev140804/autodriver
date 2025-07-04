@@ -26,11 +26,18 @@ export default function SettingsPage() {
   const [loading, setLoading] = useState(true);
   const [q, setQ] = useState('');
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [theme, setTheme] = useState('simple');
 
   useEffect(() => {
-    const stored = localStorage.getItem('driver-user');
-    if (stored) {
-      setUser(JSON.parse(stored));
+    const storedUser = localStorage.getItem('driver-user');
+    const savedTheme = localStorage.getItem('driver-theme') || 'simple';
+    setTheme(savedTheme);
+
+    // ✅ Apply saved theme directly
+    document.documentElement.setAttribute('data-theme', savedTheme);
+
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
     } else {
       router.push('/login');
     }
@@ -77,20 +84,27 @@ export default function SettingsPage() {
     },
   ];
 
-  return (
-    <div className="min-h-screen bg-[#111827] px-4 py-10 text-white flex justify-center items-start">
-      <div className="w-full max-w-lg bg-[#1f2937] rounded-2xl shadow-xl border border-gray-700 p-6 space-y-6">
+  // 🎨 Dynamic Box Arrow Classes with proper color swap
+const boxArrowClasses =
+  theme === 'dark'
+    ? 'bg-black text-white hover:bg-white hover:text-black focus:bg-black focus:text-white'
+    : theme === 'bright'
+    ? 'bg-white text-black hover:bg-black hover:text-white focus:bg-white focus:text-black'
+    : 'bg-[var(--button-bg)] text-[var(--text-color)] border border-[var(--border-color)] transition-colors duration-300 hover:bg-[var(--text-color)] hover:text-[#1e293b]';
 
+  return (
+    <div className="min-h-screen bg-[var(--bg-color)] text-[var(--text-color)] px-4 py-10 flex justify-center items-start transition-colors duration-300">
+      <div className="w-full max-w-lg bg-[var(--card-bg)] rounded-2xl shadow-xl border border-[var(--border-color)] p-6 space-y-6">
         {/* Top Bar */}
         <div className="flex items-center gap-3 mb-2">
           <button
             onClick={() => router.push('/dashboard/about')}
-            className="text-gray-400 hover:text-white transition cursor-pointer"
+            className="text-[var(--text-color)] hover:text-[var(--primary-color)] transition cursor-pointer"
             title="Back"
           >
             <ChevronLeft size={24} />
           </button>
-          <h1 className="text-xl font-semibold text-white">Settings</h1>
+          <h1 className="text-xl font-semibold text-[var(--primary-color)]">Settings</h1>
         </div>
 
         {/* Search */}
@@ -99,7 +113,7 @@ export default function SettingsPage() {
           placeholder="Search settings..."
           value={q}
           onChange={(e) => setQ(e.target.value.toLowerCase())}
-          className="w-full px-4 py-2 rounded-md bg-gray-800 border border-gray-700 placeholder-gray-500 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          className="w-full px-4 py-2 rounded-md bg-[var(--input-bg)] border border-[var(--border-color)] placeholder-[var(--placeholder-color)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)] transition-colors duration-300"
         />
 
         {/* Settings Buttons */}
@@ -110,7 +124,7 @@ export default function SettingsPage() {
               <button
                 key={idx}
                 onClick={() => router.push(s.route)}
-                className="w-full flex items-center px-4 py-3 rounded-md bg-gray-700 hover:bg-gray-600 transition cursor-pointer text-left font-medium"
+                className={`w-full flex items-center px-4 py-3 rounded-md font-medium ${boxArrowClasses}`}
               >
                 {s.icon}
                 {s.label}
@@ -121,7 +135,7 @@ export default function SettingsPage() {
           {q === '' || 'delete account'.includes(q) ? (
             <button
               onClick={() => setShowDeleteModal(true)}
-              className="w-full flex items-center justify-center gap-2 py-3 rounded-md bg-red-600 hover:bg-red-700 font-medium transition cursor-pointer"
+              className="w-full flex items-center justify-center gap-2 py-3 rounded-md bg-red-600 hover:bg-red-700 font-medium transition-colors duration-300"
             >
               <Trash2 className="w-5 h-5" />
               Delete Account
@@ -133,29 +147,31 @@ export default function SettingsPage() {
       {/* Delete Confirmation Modal */}
       {showDeleteModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm px-4">
-          <div className="bg-[#1f2937] border border-gray-700 rounded-xl max-w-sm w-full p-6 text-center space-y-4">
+          <div className="bg-[var(--card-bg)] border border-[var(--border-color)] rounded-xl max-w-sm w-full p-6 text-center space-y-4">
             <div className="flex justify-between items-center mb-2">
-              <h2 className="text-lg font-semibold text-white">Confirm Deletion</h2>
+              <h2 className="text-lg font-semibold text-[var(--primary-color)]">Confirm Deletion</h2>
               <button
                 onClick={() => setShowDeleteModal(false)}
-                className="text-gray-400 hover:text-white cursor-pointer"
+                className="text-[var(--text-color)] hover:text-[var(--primary-color)] cursor-pointer"
               >
                 <X size={20} />
               </button>
             </div>
-            <p className="text-gray-300 text-sm">
+            <p className="text-[var(--text-muted)] text-sm">
               Are you sure you want to permanently delete your account? This cannot be undone.
             </p>
             <div className="flex justify-end gap-3 pt-4">
+              {/* Cancel Button */}
               <button
                 onClick={() => setShowDeleteModal(false)}
-                className="px-4 py-2 rounded-md bg-gray-700 hover:bg-gray-600 text-white transition cursor-pointer"
+                className={`px-4 py-2 rounded-md ${boxArrowClasses}`}
               >
                 Cancel
               </button>
+              {/* Delete Button */}
               <button
                 onClick={confirmDelete}
-                className="px-4 py-2 rounded-md bg-red-600 hover:bg-red-700 text-white transition font-medium cursor-pointer"
+                className="px-4 py-2 rounded-md bg-red-600 hover:bg-red-700 text-white font-medium transition-colors duration-300"
               >
                 Delete
               </button>

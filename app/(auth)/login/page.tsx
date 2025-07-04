@@ -18,6 +18,7 @@ export default function DriverLoginPage() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [theme, setTheme] = useState('simple');
 
   useEffect(() => {
     const users = JSON.parse(localStorage.getItem('driver-users') || '[]') as DriverUser[];
@@ -32,6 +33,10 @@ export default function DriverLoginPage() {
       };
       localStorage.setItem('driver-users', JSON.stringify([...users, demoUser]));
     }
+
+    const savedTheme = localStorage.getItem('driver-theme') || 'simple';
+    setTheme(savedTheme);
+    document.documentElement.setAttribute('data-theme', savedTheme);
   }, []);
 
   const handleLogin = () => {
@@ -48,19 +53,29 @@ export default function DriverLoginPage() {
     }
   };
 
-  // 🔐 Enable logic:
   const isDemoLogin = username === 'driver' && password === '1234';
   const isValidLogin = username.trim() !== '' && password.length >= 8;
   const canLogin = isDemoLogin || isValidLogin;
 
+  // 🔥 Box Arrow Button Style
+  const boxArrowClasses = canLogin
+    ? theme === 'dark'
+      ? 'bg-black text-white hover:bg-white hover:text-black cursor-pointer'
+      : theme === 'bright'
+      ? 'bg-white text-black hover:bg-black hover:text-white cursor-pointer'
+      : 'bg-[var(--primary-color)] text-[var(--button-text)] hover:bg-[var(--primary-hover)] cursor-pointer'
+    : 'bg-[var(--card-bg)] text-[var(--text-color)] border-[var(--border-color)] cursor-not-allowed opacity-50';
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#0f0f0f] via-[#111827] to-[#1f2937] px-4 py-12">
-      <div className="w-full max-w-md bg-[#1f2937]/80 backdrop-blur-md p-8 rounded-2xl shadow-lg border border-gray-700 text-white">
-        <h1 className="text-3xl font-semibold text-center text-indigo-400 mb-6">Welcome Back</h1>
+    <div className="min-h-screen flex items-center justify-center bg-[var(--bg-color)] text-[var(--text-color)] transition-colors duration-300 px-4 py-12">
+      <div className="w-full max-w-md bg-[var(--card-bg)] backdrop-blur-md p-8 rounded-2xl shadow-lg border border-[var(--border-color)]">
+        <h1 className="text-3xl font-semibold text-center text-[var(--primary-color)] mb-6">
+          Welcome Back
+        </h1>
 
         <div className="space-y-4">
           <div>
-            <label className="block text-sm text-gray-300 mb-1">Username</label>
+            <label className="block text-sm mb-1">Username</label>
             <input
               type="text"
               value={username}
@@ -69,12 +84,12 @@ export default function DriverLoginPage() {
                 setError('');
               }}
               placeholder="Enter username"
-              className="w-full px-4 py-2 bg-gray-800 text-white rounded-lg border border-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="w-full px-4 py-2 bg-[var(--card-bg)] text-[var(--text-color)] rounded-lg border border-[var(--border-color)] focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)]"
             />
           </div>
 
           <div>
-            <label className="block text-sm text-gray-300 mb-1">Password</label>
+            <label className="block text-sm mb-1">Password</label>
             <input
               type="password"
               value={password}
@@ -83,16 +98,15 @@ export default function DriverLoginPage() {
                 setError('');
               }}
               placeholder="Enter password"
-              className="w-full px-4 py-2 bg-gray-800 text-white rounded-lg border border-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="w-full px-4 py-2 bg-[var(--card-bg)] text-[var(--text-color)] rounded-lg border border-[var(--border-color)] focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)]"
             />
           </div>
 
           {error && <p className="text-sm text-red-500 text-center">{error}</p>}
 
-          {/* Forgot Password Link */}
           <p
             onClick={() => router.push('/forgot-password')}
-            className="text-sm text-indigo-400 text-right mt-1 cursor-pointer hover:underline"
+            className="text-sm text-[var(--primary-color)] text-right mt-1 cursor-pointer hover:underline"
           >
             Forgot Password?
           </p>
@@ -101,21 +115,16 @@ export default function DriverLoginPage() {
           <button
             onClick={handleLogin}
             disabled={!canLogin}
-            className={`w-full mt-3 py-2.5 rounded-lg font-semibold transition duration-200 ${
-              canLogin
-                ? 'bg-indigo-600 hover:bg-indigo-700 cursor-pointer'
-                : 'bg-gray-700 text-gray-400 cursor-not-allowed opacity-50'
-            }`}
+            className={`w-full mt-3 py-2.5 rounded-lg font-semibold border border-[var(--border-color)] transition-colors duration-300 ${boxArrowClasses}`}
           >
             Sign In
           </button>
 
-          {/* Signup Redirect */}
-          <p className="text-center text-sm text-gray-400 mt-4">
+          <p className="text-center text-sm mt-4">
             Don’t have an account?{' '}
             <span
               onClick={() => router.push('/driver-signup')}
-              className="text-indigo-400 cursor-pointer hover:underline"
+              className="text-[var(--primary-color)] cursor-pointer hover:underline"
             >
               Sign Up
             </span>

@@ -1,45 +1,56 @@
 'use client';
 
-
-import { useEffect, useState } from 'react';
-// ... rest of imports
-import { MapContainer, Marker, Popup, TileLayer } from 'react-leaflet';
-import L from 'leaflet';
-import 'leaflet/dist/leaflet.css';
-
-// Fix Leaflet's missing marker icon issue in Next.js
-delete (L.Icon.Default as unknown as { prototype: { _getIconUrl?: () => string } }).prototype._getIconUrl;
-L.Icon.Default.mergeOptions({
-  iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.3/dist/images/marker-icon-2x.png',
-  iconUrl: 'https://unpkg.com/leaflet@1.9.3/dist/images/marker-icon.png',
-  shadowUrl: 'https://unpkg.com/leaflet@1.9.3/dist/images/marker-shadow.png',
-});
+import { useEffect, useMemo, useState } from 'react';
+import dynamic from 'next/dynamic';
+import { Expand } from 'lucide-react'; // ✅ Fullscreen box icon
 
 type DriverUser = {
   name?: string;
 };
 
+const LiveMap = dynamic(() => import('@/components/LiveMap'), { ssr: false });
+
 export default function DriverHomePage() {
   const [user, setUser] = useState<DriverUser | null>(null);
-  const [location, setLocation] = useState<{ lat: number; lng: number } | null>(null);
-  const [theme, setTheme] = useState('simple');
+  const [location, setLocation] = useState<{ lat: number; lng: number }>({
+    lat: 28.6139,
+    lng: 77.209,
+  });
+  const [theme, setTheme] = useState<'dark' | 'bright' | 'simple'>('simple');
+  const [loaded, setLoaded] = useState(false);
 
-  // Load user and theme
   useEffect(() => {
     const localUser = localStorage.getItem('driver-user');
     if (localUser) setUser(JSON.parse(localUser));
 
-    const savedTheme = localStorage.getItem('driver-theme') || 'simple';
+    const savedTheme = (localStorage.getItem('driver-theme') as 'dark' | 'bright' | 'simple') || 'simple';
     setTheme(savedTheme);
     document.documentElement.setAttribute('data-theme', savedTheme);
+
+    setLoaded(true);
   }, []);
 
-  // Track location continuously
   useEffect(() => {
     if (!navigator.geolocation) {
       console.warn('Geolocation not supported');
       return;
     }
+
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        setLocation({
+          lat: pos.coords.latitude,
+          lng: pos.coords.longitude,
+        });
+      },
+      (err) => {
+        console.warn('Initial geolocation error:', err.message);
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 10000,
+      }
+    );
 
     const watchId = navigator.geolocation.watchPosition(
       (pos) => {
@@ -49,11 +60,11 @@ export default function DriverHomePage() {
         });
       },
       (err) => {
-        console.warn('Geolocation error:', err.message);
+        console.warn('Watching geolocation error:', err.message);
       },
       {
         enableHighAccuracy: true,
-        maximumAge: 10000,
+        maximumAge: 5000,
         timeout: 10000,
       }
     );
@@ -61,103 +72,42 @@ export default function DriverHomePage() {
     return () => navigator.geolocation.clearWatch(watchId);
   }, []);
 
-  if (!user) {
+  const mapCenter = useMemo(() => location, [location]);
+
+  if (!loaded || !user) {
     return (
-      <main
-        className={`flex items-center justify-center min-h-screen transition-colors duration-300 ${
-          theme === 'dark'
-            ? 'bg-black text-white'
-            : theme === 'bright'
-            ? 'bg-white text-black'
-            : 'bg-[var(--bg-color)] text-[var(--text-color)]'
-        }`}
-      >
-        <p className="text-center opacity-70">You are not logged in.</p>
+      <main className="flex items-center justify-center min-h-screen transition-colors duration-300 bg-[var(--bg-color)] text-[var(--text-color)]">
+        <p className="text-center opacity-70">Loading user...</p>
       </main>
     );
   }
 
-  // Theme-based classes
-  const bgClasses =
-    theme === 'dark'
-      ? 'bg-black text-white'
-      : theme === 'bright'
-      ? 'bg-white text-black'
-      : 'bg-[var(--bg-color)] text-[var(--text-color)]';
-
-  const cardClasses =
-    theme === 'dark'
-      ? 'bg-black border border-gray-700 text-white'
-      : theme === 'bright'
-      ? 'bg-gray-50 border border-gray-300 text-black'
-      : 'bg-[var(--card-bg)] border border-[var(--border-color)] text-[var(--text-color)]';
-
-  const heyDriverClasses =
-    theme === 'dark'
-      ? 'text-indigo-400'
-      : theme === 'bright'
-      ? 'text-indigo-600'
-      : 'text-[var(--primary-color)]';
-
-  const subTextClasses =
-    theme === 'dark'
-      ? 'text-gray-400'
-      : theme === 'bright'
-      ? 'text-gray-600'
-      : 'text-[var(--text-muted)]';
-
-  const sectionHeadingClasses =
-    theme === 'dark'
-      ? 'text-white'
-      : theme === 'bright'
-      ? 'text-black'
-      : 'text-[var(--primary-color-light)]';
-
-  const borderClasses =
-    theme === 'dark'
-      ? 'border-gray-700'
-      : theme === 'bright'
-      ? 'border-gray-300'
-      : 'border-[var(--border-color)]';
-
   return (
-    <main className={`min-h-screen transition-colors duration-300 px-6 py-10 ${bgClasses}`}>
+    <main className="min-h-screen transition-colors duration-300 px-6 py-10 bg-[var(--bg-color)] text-[var(--text-color)]">
       <div className="max-w-4xl mx-auto space-y-10">
-        {/* Header */}
+        {/* Greeting */}
         <div className="text-center">
-          <h1 className={`text-3xl font-semibold ${heyDriverClasses}`}>
+          <h1 className="text-3xl font-semibold text-[var(--primary-color)]">
             Hey, {user.name?.split(' ')[0] || 'Driver'} 👋
           </h1>
-          <p className={`text-sm mt-2 ${subTextClasses}`}>Ready to hit the road?</p>
+          <p className="text-sm mt-2 text-[var(--text-muted)]">Ready to hit the road?</p>
         </div>
 
-        {/* Location Card */}
-        <section
-          className={`rounded-2xl shadow-2xl backdrop-blur-xl p-6 transition-colors duration-300 ${cardClasses}`}
-        >
-          <h2 className={`text-lg font-medium mb-4 ${sectionHeadingClasses}`}>📍 Live Location</h2>
+        {/* Live Map Section */}
+        <section className="rounded-2xl shadow-2xl backdrop-blur-xl p-6 transition-colors duration-300 bg-[var(--card-bg)] border border-[var(--border-color)] text-[var(--text-color)]">
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-lg font-medium text-[var(--primary-color-light)]">📍 Live Location</h2>
+            <a
+              href="/dashboard/map-fullscreen"
+              title="Open Fullscreen Map"
+              className="p-2 rounded-md hover:bg-[var(--hover-bg)] hover:opacity-80 transition"
+            >
+              <Expand size={20} className="text-[var(--primary-color)]" />
+            </a>
+          </div>
 
-          <div className={`w-full h-[400px] rounded-lg border overflow-hidden ${borderClasses}`}>
-            {location ? (
-              <MapContainer
-                center={[location.lat, location.lng]}
-                zoom={15}
-                scrollWheelZoom={false}
-                style={{ height: '100%', width: '100%' }}
-              >
-                <TileLayer
-                  url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                  attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a>'
-                />
-                <Marker position={[location.lat, location.lng]}>
-                  <Popup>You are here</Popup>
-                </Marker>
-              </MapContainer>
-            ) : (
-              <div className="h-full flex items-center justify-center text-sm text-gray-500">
-                Loading map...
-              </div>
-            )}
+          <div className="w-full h-[400px] rounded-lg border overflow-hidden border-[var(--border-color)]">
+            <LiveMap lat={mapCenter.lat} lng={mapCenter.lng} theme={theme} />
           </div>
         </section>
       </div>

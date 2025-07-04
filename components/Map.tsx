@@ -16,14 +16,14 @@ const Map = () => {
   const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || '';
 
   return (
-    <div className="w-full h-[400px] rounded-xl overflow-hidden shadow-md border border-gray-700">
+    <div className="w-full h-[400px] rounded-xl overflow-hidden shadow-md border border-[var(--border-color)] bg-[var(--card-bg)]">
       <LoadScript googleMapsApiKey={apiKey}>
         <GoogleMap
           mapContainerStyle={containerStyle}
           center={center}
           zoom={14}
         >
-          {/* You can add markers or directions here */}
+          {/* Add markers/directions here */}
         </GoogleMap>
       </LoadScript>
     </div>

@@ -1,6 +1,17 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
+import { MapContainer, Marker, Popup, TileLayer } from 'react-leaflet';
+import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
+
+// Fix Leaflet's missing marker icon issue in Next.js
+delete (L.Icon.Default as any).prototype._getIconUrl;
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.3/dist/images/marker-icon-2x.png',
+  iconUrl: 'https://unpkg.com/leaflet@1.9.3/dist/images/marker-icon.png',
+  shadowUrl: 'https://unpkg.com/leaflet@1.9.3/dist/images/marker-shadow.png',
+});
 
 type DriverUser = {
   name?: string;
@@ -10,21 +21,25 @@ export default function DriverHomePage() {
   const [user, setUser] = useState<DriverUser | null>(null);
   const [location, setLocation] = useState<{ lat: number; lng: number } | null>(null);
   const [theme, setTheme] = useState('simple');
-  const mapRef = useRef<HTMLDivElement>(null);
 
+  // Load user and theme
   useEffect(() => {
     const localUser = localStorage.getItem('driver-user');
-    if (localUser) {
-      setUser(JSON.parse(localUser));
-    }
+    if (localUser) setUser(JSON.parse(localUser));
 
     const savedTheme = localStorage.getItem('driver-theme') || 'simple';
     setTheme(savedTheme);
     document.documentElement.setAttribute('data-theme', savedTheme);
   }, []);
 
+  // Track location continuously
   useEffect(() => {
-    navigator.geolocation.getCurrentPosition(
+    if (!navigator.geolocation) {
+      console.warn('Geolocation not supported');
+      return;
+    }
+
+    const watchId = navigator.geolocation.watchPosition(
       (pos) => {
         setLocation({
           lat: pos.coords.latitude,
@@ -32,26 +47,17 @@ export default function DriverHomePage() {
         });
       },
       (err) => {
-        console.warn('Geolocation permission denied or unavailable:', err.message);
+        console.warn('Geolocation error:', err.message);
+      },
+      {
+        enableHighAccuracy: true,
+        maximumAge: 10000,
+        timeout: 10000,
       }
     );
+
+    return () => navigator.geolocation.clearWatch(watchId);
   }, []);
-
-  useEffect(() => {
-    if (location && window.google && mapRef.current) {
-      const map = new window.google.maps.Map(mapRef.current, {
-        center: location,
-        zoom: 15,
-        disableDefaultUI: true,
-      });
-
-      new window.google.maps.Marker({
-        position: location,
-        map,
-        title: 'You are here',
-      });
-    }
-  }, [location]);
 
   if (!user) {
     return (
@@ -69,7 +75,7 @@ export default function DriverHomePage() {
     );
   }
 
-  // 🎨 Dynamic Classes
+  // Theme-based classes
   const bgClasses =
     theme === 'dark'
       ? 'bg-black text-white'
@@ -128,10 +134,29 @@ export default function DriverHomePage() {
           className={`rounded-2xl shadow-2xl backdrop-blur-xl p-6 transition-colors duration-300 ${cardClasses}`}
         >
           <h2 className={`text-lg font-medium mb-4 ${sectionHeadingClasses}`}>📍 Live Location</h2>
-          <div
-            ref={mapRef}
-            className={`w-full h-[400px] rounded-lg border ${borderClasses}`}
-          />
+
+          <div className={`w-full h-[400px] rounded-lg border overflow-hidden ${borderClasses}`}>
+            {location ? (
+              <MapContainer
+                center={[location.lat, location.lng]}
+                zoom={15}
+                scrollWheelZoom={false}
+                style={{ height: '100%', width: '100%' }}
+              >
+                <TileLayer
+                  url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                  attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a>'
+                />
+                <Marker position={[location.lat, location.lng]}>
+                  <Popup>You are here</Popup>
+                </Marker>
+              </MapContainer>
+            ) : (
+              <div className="h-full flex items-center justify-center text-sm text-gray-500">
+                Loading map...
+              </div>
+            )}
+          </div>
         </section>
       </div>
     </main>

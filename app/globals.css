@@ -8,34 +8,34 @@
   --font-geist-mono: 'Geist Mono', monospace;
 }
 
-/* === Default (Bright Theme) === */
+/* === Bright Theme (white bg, black text) === */
 [data-theme='bright'] {
   --bg-color: #ffffff;
   --text-color: #111111;
   --card-bg: #f7f7f7;
   --border-color: #e2e8f0;
-  --primary-color: #000000; /* Tailwind Blue-600 */
-  --secondary-color: #10b981; /* Emerald-500 */
+  --primary-color: #000000;
+  --secondary-color: #10b981;
 }
 
-/* === Simple Theme (Blue Navy Gradient) === */
+/* === Simple Theme (blue-navy professional) === */
 [data-theme='simple'] {
-  --bg-color: #0f172a; /* Tailwind Slate-900 */
-  --text-color: #e2e8f0; /* Tailwind Slate-200 */
-  --card-bg: #1e293b; /* Tailwind Slate-800 */
-  --border-color: #334155; /* Tailwind Slate-700 */
-  --primary-color: #6366f1; /* Indigo-500 */
-  --secondary-color: #3b82f6; /* Blue-500 */
+  --bg-color: #1e293b;
+  --text-color: #e2e8f0;
+  --card-bg: #334155;
+  --border-color: #475569;
+  --primary-color: #60a5fa;
+  --secondary-color: #38bdf8;
 }
 
-/* === Dark Theme (Luxury Black) === */
+/* === Dark Theme === */
 [data-theme='dark'] {
-  --bg-color: #0a0a0a; /* Pure Black */
+  --bg-color: #0a0a0a;
   --text-color: #ededed;
   --card-bg: #111111;
   --border-color: #222222;
   --primary-color: #ffffff;
-  --secondary-color: #9ca3af; /* Gray-400 */
+  --secondary-color: #9ca3af;
 }
 
 /* === Apply Theme Styles === */
@@ -44,14 +44,14 @@ html, body {
   color: var(--text-color);
   font-family: var(--font-geist-sans), system-ui, sans-serif;
   transition: background-color 0.3s ease, color 0.3s ease;
+  min-height: 100vh;
 }
 
-/* Example usage for cards, buttons, etc. */
 .card {
   background-color: var(--card-bg);
   color: var(--text-color);
   border: 1px solid var(--border-color);
-  border-radius: 0.75rem; /* xl */
+  border-radius: 0.75rem;
   padding: 1rem;
 }
 

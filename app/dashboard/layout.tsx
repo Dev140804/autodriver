@@ -1,8 +1,8 @@
 'use client';
 
-import { AnimatePresence, motion } from 'framer-motion';
 import { usePathname } from 'next/navigation';
-import { useRef } from 'react';
+import { useRef, useEffect, useState } from 'react';
+import './transition.css'; // ✅ Import custom transition styles
 
 export default function DashboardLayout({
   children,
@@ -10,38 +10,31 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
-  const prevPath = useRef(pathname);
+  const prevPath = useRef<string | null>(null);
+  const [direction, setDirection] = useState<'left' | 'right'>('left');
+  const [isAnimating, setIsAnimating] = useState(true);
 
-  const isBack = pathname < prevPath.current;
-  prevPath.current = pathname;
+  useEffect(() => {
+    if (prevPath.current) {
+      setDirection(pathname > prevPath.current ? 'left' : 'right');
+    }
+    prevPath.current = pathname;
+    setIsAnimating(true);
+
+    const timeout = setTimeout(() => setIsAnimating(false), 350);
+    return () => clearTimeout(timeout);
+  }, [pathname]);
+
+  const animationClass =
+    isAnimating && direction === 'left'
+      ? 'slide-left'
+      : isAnimating && direction === 'right'
+      ? 'slide-right'
+      : '';
 
   return (
-    <AnimatePresence mode="wait">
-      <motion.div
-        key={pathname}
-        initial={{
-          x: isBack ? -50 : 50,
-          opacity: 0.6,
-          scale: 0.98,
-        }}
-        animate={{
-          x: 0,
-          opacity: 1,
-          scale: 1,
-        }}
-        exit={{
-          x: isBack ? 50 : -50,
-          opacity: 0,
-          scale: 0.96,
-        }}
-        transition={{
-          duration: 0.35,
-          ease: [0.22, 1, 0.36, 1], // Smooth professional cubic bezier
-        }}
-        className="min-h-screen"
-      >
-        {children}
-      </motion.div>
-    </AnimatePresence>
+    <div className={`page-slide ${animationClass}`}>
+      {children}
+    </div>
   );
 }

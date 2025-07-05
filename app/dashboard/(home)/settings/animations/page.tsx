@@ -16,6 +16,7 @@ export default function AnimationSettingsPage() {
   const toggleAnimations = (value: 'on' | 'off') => {
     setAnimations(value);
     localStorage.setItem('driver-animations', value);
+    window.dispatchEvent(new Event('driver-animation-toggle')); // ✅ Trigger layout to update
   };
 
   const baseClasses =

@@ -4,14 +4,6 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useRef, useEffect, useState } from 'react';
 import './transition.css';
 
-// ✅ Move outside component to prevent rerenders
-const routeOrder = [
-  '/dashboard/home',
-  '/dashboard/rides',
-  '/dashboard/earnings',
-  '/dashboard/about',
-];
-
 export default function DashboardLayout({
   children,
 }: {
@@ -22,13 +14,28 @@ export default function DashboardLayout({
   const prevPath = useRef<string | null>(null);
 
   const [direction, setDirection] = useState<'left' | 'right'>('left');
-  const [isAnimating, setIsAnimating] = useState(true);
+  const [isAnimating, setIsAnimating] = useState(false);
   const [animationsEnabled, setAnimationsEnabled] = useState(true);
 
-  // ✅ Load animation setting
+  const routeOrder = [
+    '/dashboard/home',
+    '/dashboard/rides',
+    '/dashboard/earnings',
+    '/dashboard/about',
+  ];
+
+  // ✅ Load animation setting + listen for setting change
   useEffect(() => {
-    const setting = localStorage.getItem('driver-animations') || 'on';
-    setAnimationsEnabled(setting !== 'off');
+    const saved = localStorage.getItem('driver-animations') || 'on';
+    setAnimationsEnabled(saved !== 'off');
+
+    const handleToggle = () => {
+      const updated = localStorage.getItem('driver-animations') || 'on';
+      setAnimationsEnabled(updated !== 'off');
+    };
+
+    window.addEventListener('driver-animation-toggle', handleToggle);
+    return () => window.removeEventListener('driver-animation-toggle', handleToggle);
   }, []);
 
   // ✅ Swipe gesture detection
@@ -95,11 +102,15 @@ export default function DashboardLayout({
     }
 
     prevPath.current = pathname;
-    setIsAnimating(true);
 
-    const timeout = setTimeout(() => setIsAnimating(false), 400);
-    return () => clearTimeout(timeout);
-  }, [pathname]);
+    if (animationsEnabled) {
+      setIsAnimating(true);
+      const timeout = setTimeout(() => setIsAnimating(false), 400);
+      return () => clearTimeout(timeout);
+    } else {
+      setIsAnimating(false);
+    }
+  }, [pathname, animationsEnabled]);
 
   const animationClass =
     animationsEnabled && isAnimating && direction === 'left'

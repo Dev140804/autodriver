@@ -15,7 +15,6 @@ export default function DashboardLayout({
   const [direction, setDirection] = useState<'left' | 'right'>('left');
   const [isAnimating, setIsAnimating] = useState(true);
 
-  // Ordered tab routes
   const routeOrder = [
     '/dashboard/home',
     '/dashboard/rides',
@@ -23,27 +22,32 @@ export default function DashboardLayout({
     '/dashboard/about',
   ];
 
-  // ✅ Swipe detection
+  // ✅ Swipe gesture detection
   useEffect(() => {
-    let startX: number;
+    let startX = 0;
+    let startTime = 0;
 
     const handleTouchStart = (e: TouchEvent) => {
       startX = e.touches[0].clientX;
+      startTime = new Date().getTime();
     };
 
     const handleTouchEnd = (e: TouchEvent) => {
       const endX = e.changedTouches[0].clientX;
+      const endTime = new Date().getTime();
       const diff = startX - endX;
+      const elapsed = endTime - startTime;
 
-      const threshold = 50; // Minimum swipe distance
+      const threshold = 60; // minimum swipe distance
+      const maxTime = 500; // max swipe duration for it to count
       const currentIndex = routeOrder.indexOf(pathname);
 
-      if (diff > threshold && currentIndex < routeOrder.length - 1) {
-        // Swipe left
-        router.push(routeOrder[currentIndex + 1]);
-      } else if (diff < -threshold && currentIndex > 0) {
-        // Swipe right
-        router.push(routeOrder[currentIndex - 1]);
+      if (elapsed < maxTime) {
+        if (diff > threshold && currentIndex < routeOrder.length - 1) {
+          router.push(routeOrder[currentIndex + 1]); // swipe left
+        } else if (diff < -threshold && currentIndex > 0) {
+          router.push(routeOrder[currentIndex - 1]); // swipe right
+        }
       }
     };
 
@@ -56,7 +60,7 @@ export default function DashboardLayout({
     };
   }, [pathname, router]);
 
-  // ✅ Animation direction
+  // ✅ Directional animation logic
   useEffect(() => {
     const current = pathname;
     const previous = prevPath.current;
@@ -84,7 +88,7 @@ export default function DashboardLayout({
     prevPath.current = pathname;
     setIsAnimating(true);
 
-    const timeout = setTimeout(() => setIsAnimating(false), 350);
+    const timeout = setTimeout(() => setIsAnimating(false), 400); // slightly slower
     return () => clearTimeout(timeout);
   }, [pathname]);
 

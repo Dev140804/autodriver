@@ -4,6 +4,14 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useRef, useEffect, useState } from 'react';
 import './transition.css';
 
+// ✅ Move outside component to prevent rerenders
+const routeOrder = [
+  '/dashboard/home',
+  '/dashboard/rides',
+  '/dashboard/earnings',
+  '/dashboard/about',
+];
+
 export default function DashboardLayout({
   children,
 }: {
@@ -12,15 +20,16 @@ export default function DashboardLayout({
   const pathname = usePathname();
   const router = useRouter();
   const prevPath = useRef<string | null>(null);
+
   const [direction, setDirection] = useState<'left' | 'right'>('left');
   const [isAnimating, setIsAnimating] = useState(true);
+  const [animationsEnabled, setAnimationsEnabled] = useState(true);
 
-  const routeOrder = [
-    '/dashboard/home',
-    '/dashboard/rides',
-    '/dashboard/earnings',
-    '/dashboard/about',
-  ];
+  // ✅ Load animation setting
+  useEffect(() => {
+    const setting = localStorage.getItem('driver-animations') || 'on';
+    setAnimationsEnabled(setting !== 'off');
+  }, []);
 
   // ✅ Swipe gesture detection
   useEffect(() => {
@@ -38,15 +47,15 @@ export default function DashboardLayout({
       const diff = startX - endX;
       const elapsed = endTime - startTime;
 
-      const threshold = 60; // minimum swipe distance
-      const maxTime = 500; // max swipe duration for it to count
+      const threshold = 60;
+      const maxTime = 500;
       const currentIndex = routeOrder.indexOf(pathname);
 
       if (elapsed < maxTime) {
         if (diff > threshold && currentIndex < routeOrder.length - 1) {
-          router.push(routeOrder[currentIndex + 1]); // swipe left
+          router.push(routeOrder[currentIndex + 1]);
         } else if (diff < -threshold && currentIndex > 0) {
-          router.push(routeOrder[currentIndex - 1]); // swipe right
+          router.push(routeOrder[currentIndex - 1]);
         }
       }
     };
@@ -88,14 +97,14 @@ export default function DashboardLayout({
     prevPath.current = pathname;
     setIsAnimating(true);
 
-    const timeout = setTimeout(() => setIsAnimating(false), 400); // slightly slower
+    const timeout = setTimeout(() => setIsAnimating(false), 400);
     return () => clearTimeout(timeout);
   }, [pathname]);
 
   const animationClass =
-    isAnimating && direction === 'left'
+    animationsEnabled && isAnimating && direction === 'left'
       ? 'slide-left'
-      : isAnimating && direction === 'right'
+      : animationsEnabled && isAnimating && direction === 'right'
       ? 'slide-right'
       : '';
 

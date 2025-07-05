@@ -10,8 +10,12 @@ import {
   Info,
   Trash2,
   X,
+  MonitorPlay,
 } from 'lucide-react';
 
+// ⬅️ Optional new import if you use a switch UI in AnimationPage
+
+// Driver user type
 type DriverUser = {
   name?: string;
   email?: string;
@@ -31,9 +35,8 @@ export default function SettingsPage() {
   useEffect(() => {
     const storedUser = localStorage.getItem('driver-user');
     const savedTheme = localStorage.getItem('driver-theme') || 'simple';
-    setTheme(savedTheme);
 
-    // ✅ Apply saved theme directly
+    setTheme(savedTheme);
     document.documentElement.setAttribute('data-theme', savedTheme);
 
     if (storedUser) {
@@ -71,6 +74,12 @@ export default function SettingsPage() {
       key: 'theme',
     },
     {
+      label: 'Animations',
+      icon: <MonitorPlay className="w-5 h-5 mr-3" />,
+      route: '/dashboard/settings/animations',
+      key: 'animations',
+    },
+    {
       label: 'Help Assistant',
       icon: <MessageCircle className="w-5 h-5 mr-3" />,
       route: '/dashboard/settings/help-assistant',
@@ -84,13 +93,12 @@ export default function SettingsPage() {
     },
   ];
 
-  // 🎨 Dynamic Box Arrow Classes with proper color swap
-const boxArrowClasses =
-  theme === 'dark'
-    ? 'bg-black text-white hover:bg-white hover:text-black focus:bg-black focus:text-white'
-    : theme === 'bright'
-    ? 'bg-white text-black hover:bg-black hover:text-white focus:bg-white focus:text-black'
-    : 'bg-[var(--button-bg)] text-[var(--text-color)] border border-[var(--border-color)] transition-colors duration-300 hover:bg-[var(--text-color)] hover:text-[#1e293b]';
+  const boxArrowClasses =
+    theme === 'dark'
+      ? 'bg-black text-white hover:bg-white hover:text-black focus:bg-black focus:text-white'
+      : theme === 'bright'
+      ? 'bg-white text-black hover:bg-black hover:text-white focus:bg-white focus:text-black'
+      : 'bg-[var(--button-bg)] text-[var(--text-color)] border border-[var(--border-color)] transition-colors duration-300 hover:bg-[var(--text-color)] hover:text-[#1e293b]';
 
   return (
     <div className="min-h-screen bg-[var(--bg-color)] text-[var(--text-color)] px-4 py-10 flex justify-center items-start transition-colors duration-300">
@@ -161,14 +169,12 @@ const boxArrowClasses =
               Are you sure you want to permanently delete your account? This cannot be undone.
             </p>
             <div className="flex justify-end gap-3 pt-4">
-              {/* Cancel Button */}
               <button
                 onClick={() => setShowDeleteModal(false)}
                 className={`px-4 py-2 rounded-md ${boxArrowClasses}`}
               >
                 Cancel
               </button>
-              {/* Delete Button */}
               <button
                 onClick={confirmDelete}
                 className="px-4 py-2 rounded-md bg-red-600 hover:bg-red-700 text-white font-medium transition-colors duration-300"

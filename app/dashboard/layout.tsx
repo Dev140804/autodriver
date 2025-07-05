@@ -15,6 +15,7 @@ export default function DashboardLayout({
   const [direction, setDirection] = useState<'left' | 'right'>('left');
   const [isAnimating, setIsAnimating] = useState(true);
 
+  // Ordered tab routes
   const routeOrder = [
     '/dashboard/home',
     '/dashboard/rides',
@@ -22,32 +23,27 @@ export default function DashboardLayout({
     '/dashboard/about',
   ];
 
-  // ✅ Swipe gesture detection
+  // ✅ Swipe detection
   useEffect(() => {
-    let startX = 0;
-    let startTime = 0;
+    let startX: number;
 
     const handleTouchStart = (e: TouchEvent) => {
       startX = e.touches[0].clientX;
-      startTime = new Date().getTime();
     };
 
     const handleTouchEnd = (e: TouchEvent) => {
       const endX = e.changedTouches[0].clientX;
-      const endTime = new Date().getTime();
       const diff = startX - endX;
-      const elapsed = endTime - startTime;
 
-      const threshold = 60; // minimum swipe distance
-      const maxTime = 500; // max swipe duration for it to count
+      const threshold = 50; // Minimum swipe distance
       const currentIndex = routeOrder.indexOf(pathname);
 
-      if (elapsed < maxTime) {
-        if (diff > threshold && currentIndex < routeOrder.length - 1) {
-          router.push(routeOrder[currentIndex + 1]); // swipe left
-        } else if (diff < -threshold && currentIndex > 0) {
-          router.push(routeOrder[currentIndex - 1]); // swipe right
-        }
+      if (diff > threshold && currentIndex < routeOrder.length - 1) {
+        // Swipe left
+        router.push(routeOrder[currentIndex + 1]);
+      } else if (diff < -threshold && currentIndex > 0) {
+        // Swipe right
+        router.push(routeOrder[currentIndex - 1]);
       }
     };
 
@@ -58,9 +54,9 @@ export default function DashboardLayout({
       window.removeEventListener('touchstart', handleTouchStart);
       window.removeEventListener('touchend', handleTouchEnd);
     };
-  }, [pathname, router]);
+  }, [pathname, router, routeOrder]);
 
-  // ✅ Directional animation logic
+  // ✅ Animation direction
   useEffect(() => {
     const current = pathname;
     const previous = prevPath.current;
@@ -88,9 +84,9 @@ export default function DashboardLayout({
     prevPath.current = pathname;
     setIsAnimating(true);
 
-    const timeout = setTimeout(() => setIsAnimating(false), 400); // slightly slower
+    const timeout = setTimeout(() => setIsAnimating(false), 350);
     return () => clearTimeout(timeout);
-  }, [pathname]);
+  }, [pathname, routeOrder]);
 
   const animationClass =
     isAnimating && direction === 'left'

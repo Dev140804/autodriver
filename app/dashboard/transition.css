@@ -1,0 +1,36 @@
+/* app/dashboard/transition.css */
+
+.page-slide {
+  position: relative;
+  overflow-x: hidden;
+}
+
+.slide-left {
+  animation: slideLeft 0.35s ease-in-out;
+}
+
+.slide-right {
+  animation: slideRight 0.35s ease-in-out;
+}
+
+@keyframes slideLeft {
+  from {
+    opacity: 0.6;
+    transform: translateX(50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideRight {
+  from {
+    opacity: 0.6;
+    transform: translateX(-50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}

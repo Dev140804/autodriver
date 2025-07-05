@@ -20,6 +20,7 @@ export default function EarningsPage() {
     setTheme(savedTheme);
     document.documentElement.setAttribute('data-theme', savedTheme);
   }, []);
+  
 
   const firstName = user?.name?.split(' ')[0] || 'Driver';
 

@@ -4,11 +4,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useRef, useEffect, useState } from 'react';
 import './transition.css';
 
-export default function DashboardLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
   const prevPath = useRef<string | null>(null);
@@ -24,7 +20,6 @@ export default function DashboardLayout({
     '/dashboard/about',
   ];
 
-  // ✅ Load animation setting + listen for setting change
   useEffect(() => {
     const saved = localStorage.getItem('driver-animations') || 'on';
     setAnimationsEnabled(saved !== 'off');
@@ -38,7 +33,6 @@ export default function DashboardLayout({
     return () => window.removeEventListener('driver-animation-toggle', handleToggle);
   }, []);
 
-  // ✅ Swipe gesture detection
   useEffect(() => {
     let startX = 0;
     let startTime = 0;
@@ -74,9 +68,10 @@ export default function DashboardLayout({
       window.removeEventListener('touchstart', handleTouchStart);
       window.removeEventListener('touchend', handleTouchEnd);
     };
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname, router]);
 
-  // ✅ Directional animation logic
   useEffect(() => {
     const current = pathname;
     const previous = prevPath.current;
@@ -92,7 +87,6 @@ export default function DashboardLayout({
       } else {
         const currentIndex = routeOrder.indexOf(currentBase);
         const prevIndex = routeOrder.indexOf(prevBase);
-
         if (currentIndex !== -1 && prevIndex !== -1) {
           setDirection(currentIndex > prevIndex ? 'left' : 'right');
         } else {
@@ -110,6 +104,8 @@ export default function DashboardLayout({
     } else {
       setIsAnimating(false);
     }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname, animationsEnabled]);
 
   const animationClass =
@@ -119,5 +115,9 @@ export default function DashboardLayout({
       ? 'slide-right'
       : '';
 
-  return <div className={`page-slide ${animationClass}`}>{children}</div>;
+  return (
+    <div className={`page-slide ${animationClass}`}>
+      {children}
+    </div>
+  );
 }

@@ -1,8 +1,7 @@
-// index.ts
 import express from 'express';
 import cors from 'cors';
 const app = express();
-const PORT = 8080;
+const PORT = parseInt(process.env.PORT || '8080');
 // ✅ Setup CORS
 app.use(cors({
     origin: '*',
@@ -18,7 +17,7 @@ app.use(cors({
     exposedHeaders: ['Content-Type', 'Authorization'],
     credentials: false,
 }));
-// ✅ Extra manual CORS headers (some clients like Cloudflare/ESP8266 need this)
+// ✅ Extra manual CORS headers (for full ESP8266 compatibility)
 app.use((req, res, next) => {
     res.header('Access-Control-Allow-Origin', '*');
     res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
@@ -33,8 +32,8 @@ app.use((req, res, next) => {
 app.use(express.json());
 const users = [];
 let latestRide = null;
+const rideStatusMap = {};
 /* 👤 Routes */
-// ✅ Health check
 app.get('/', (_req, res) => {
     res.send('🚀 Backend is running!');
 });
@@ -67,7 +66,8 @@ app.post('/api/book-ride', (req, res) => {
     if (!device || !pickup || !destination) {
         return res.status(400).json({ message: 'Missing fields in request' });
     }
-    const fare = type === 'Private' ? '₹180' : '₹120';
+    const rideType = (type || 'shared').toLowerCase();
+    const fare = rideType === 'private' ? '₹180' : '₹120';
     latestRide = {
         device,
         pickup,
@@ -76,10 +76,11 @@ app.post('/api/book-ride', (req, res) => {
         lat,
         lng,
         timestamp: Date.now(),
-        type,
+        type: rideType,
     };
+    rideStatusMap[device] = 'pending';
     console.log('📦 New ride request received:', latestRide);
-    res.json({
+    res.status(200).json({
         message: 'Ride request received',
         from: pickup,
         to: destination,
@@ -106,6 +107,7 @@ app.post('/api/ride-accept', (req, res) => {
         return res.status(404).json({ message: 'No matching ride to accept' });
     }
     console.log(`✅ Ride accepted by device: ${device}`);
+    rideStatusMap[device] = 'accepted';
     latestRide = null;
     res.json({ message: 'Ride accepted' });
 });
@@ -117,10 +119,20 @@ app.post('/api/ride-reject', (req, res) => {
         return res.status(404).json({ message: 'No matching ride to reject' });
     }
     console.log(`❌ Ride rejected by device: ${device}`);
+    rideStatusMap[device] = 'rejected';
     latestRide = null;
     res.json({ message: 'Ride rejected' });
 });
+// ✅ Ride Status Polling for ESP8266
+app.get('/api/ride-status/:device', (req, res) => {
+    const { device } = req.params;
+    const status = rideStatusMap[device];
+    if (!status) {
+        return res.json({ status: 'none' }); // no request sent yet
+    }
+    return res.json({ status });
+});
 // ✅ Start Express server
-app.listen(PORT, '127.0.0.1', () => {
-    console.log(`✅ Server running at http://127.0.0.1:${PORT}`);
+app.listen(PORT, '0.0.0.0', () => {
+    console.log(`✅ Server running at http://0.0.0.0:${PORT}`);
 });

@@ -2,7 +2,7 @@ import express from 'express';
 import cors from 'cors';
 
 const app = express();
-const PORT = 8080;
+const PORT = parseInt(process.env.PORT || '8080');
 
 // ✅ Setup CORS
 app.use(cors({
@@ -20,7 +20,7 @@ app.use(cors({
   credentials: false,
 }));
 
-// ✅ Extra manual CORS headers
+// ✅ Extra manual CORS headers (for full ESP8266 compatibility)
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', '*');
   res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
@@ -125,7 +125,7 @@ app.post('/api/book-ride', (req, res) => {
 
   console.log('📦 New ride request received:', latestRide);
 
-  res.json({
+  res.status(200).json({
     message: 'Ride request received',
     from: pickup,
     to: destination,

@@ -10,39 +10,65 @@
 │   │   │   └── page.tsx
 │   │   └── welcome
 │   │       └── page.tsx
-│   ├── api
-│   │   └── auth
-│   │       └── [...nextauth]
+│   ├── ClientRoot.tsx
+│   ├── context
+│   │   ├── RideContext.tsx
+│   │   └── ThemeContext.tsx
 │   ├── dashboard
 │   │   ├── (home)
 │   │   │   ├── about
+│   │   │   ├── about-info
 │   │   │   ├── earnings
 │   │   │   ├── home
 │   │   │   ├── layout.tsx
 │   │   │   ├── rides
 │   │   │   └── settings
+│   │   ├── layout.tsx
+│   │   ├── map-fullscreen
+│   │   │   └── page.tsx
 │   │   ├── page.tsx
-│   │   └── settings
+│   │   └── transition.css
 │   ├── favicon.ico
 │   ├── globals.css
 │   ├── layout.tsx
-│   └── page.tsx
+│   ├── page.tsx
+│   └── providers.tsx
+├── backend
+│   ├── index.ts
+│   ├── package-lock.json
+│   ├── package.json
+│   └── tsconfig.json
 ├── components
-│   └── Map.tsx
+│   ├── PageWrapper.tsx
+│   ├── maps
+│   │   ├── LiveMap.tsx
+│   │   ├── RidePopup.tsx
+│   │   └── Routing.tsx
+│   ├── theme
+│   │   ├── theme-hydrator.tsx
+│   │   └── theme-provider.tsx
+│   └── ui
+├── context
+│   └── RideContext.tsx
 ├── eslint.config.mjs
 ├── next-env.d.ts
 ├── next.config.ts
 ├── package-lock.json
 ├── package.json
-├── postcss.config.mjs
+├── postcss.config.js
 ├── public
 │   ├── file.svg
 │   ├── globe.svg
 │   ├── next.svg
 │   ├── vercel.svg
 │   └── window.svg
+├── tailwind.config.js
 ├── tree-latest.txt
 ├── tree-structure.zip
-└── tsconfig.json
+├── tsconfig.json
+├── tsconfig.tmp.json
+├── tsconfig.tsbuildinfo
+└── types
+    └── leaflet-routing-machine.d.ts
 
-20 directories, 26 files
+25 directories, 47 files

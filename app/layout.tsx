@@ -1,9 +1,13 @@
 // app/layout.tsx ✅ SERVER COMPONENT
 import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
-import './globals.css';
-import ThemeHydrator from './theme-hydrator';
+import '@/styles/globals.css';
+import ThemeHydrator from '@/components/theme/theme-hydrator';
 import ClientRoot from './ClientRoot';
+
+// ⬇️ added
+import { RideProvider } from '@/context/RideContext';
+import GlobalRideWatcher from '@/components/GlobalRideWatcher';
 
 const geistSans = Geist({
   subsets: ['latin'],
@@ -20,7 +24,6 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: 'Auto Driver App',
   description: 'Driver-side ride sharing app',
-  viewport: 'width=device-width, initial-scale=1.0',
   icons: {
     icon: '/favicon.ico',
   },
@@ -32,8 +35,15 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <head />
       <body className="antialiased transition-colors duration-300">
         <ThemeHydrator />
-        <ClientRoot>{children}</ClientRoot>
+        <ClientRoot>
+          <RideProvider>
+            {children}
+            <GlobalRideWatcher />
+          </RideProvider>
+        </ClientRoot>
       </body>
     </html>
   );
 }
+
+export const viewport = { width: 'device-width', initialScale: 1.0 };

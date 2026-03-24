@@ -1,26 +1,26 @@
-// context/RideContext.tsx ✅ FIXED
 'use client';
 
 import { createContext, useContext, useState, ReactNode } from 'react';
 
-// Define the shape of a ride request
-export type RideRequest = {
+type RideRequest = {
   device: string;
   pickup: string;
   destination: string;
   fare: string;
+  lat?: number;
+  lng?: number;
+  type?: 'private' | 'shared' | 'sharing';
+  timestamp?: number;
+  rideId?: string; // if/when you add rideId in backend
 };
 
-// Define the context type
-export type RideContextType = {
+type RideContextType = {
   request: RideRequest | null;
   setRequest: (request: RideRequest | null) => void;
 };
 
-// Create the context
 const RideContext = createContext<RideContextType | undefined>(undefined);
 
-// Provider component
 export function RideProvider({ children }: { children: ReactNode }) {
   const [request, setRequest] = useState<RideRequest | null>(null);
 
@@ -31,7 +31,6 @@ export function RideProvider({ children }: { children: ReactNode }) {
   );
 }
 
-// Hook to use the ride context
 export function useRide() {
   const context = useContext(RideContext);
   if (!context) {
